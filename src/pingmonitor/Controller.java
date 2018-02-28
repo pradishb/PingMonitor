@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class Controller implements Initializable{
+public class Controller implements Initializable {
     private XYChart.Series dataSeries;
 
     private final int X_COUNT = 30;
@@ -52,23 +52,22 @@ public class Controller implements Initializable{
         chart.setTitle("Live Ping Data");
     }
 
-    private void update(){
+    private void update() {
         Platform.runLater(() -> {
-            ((ObservableList<Data<Integer, Integer>>)dataSeries.getData()).forEach(
-                (myItem) -> {
-                    int oldXValue = myItem.getXValue();
-                    myItem.setXValue(oldXValue + 1);
-                }
+            ((ObservableList<Data<Integer, Integer>>) dataSeries.getData()).forEach(
+                    (myItem) -> {
+                        int oldXValue = myItem.getXValue();
+                        myItem.setXValue(oldXValue + 1);
+                    }
             );
-            if(dataSeries.getData().size() > X_COUNT - 1){
+            if (dataSeries.getData().size() > X_COUNT - 1) {
                 dataSeries.getData().remove(X_COUNT - 1);
             }
 
             int ping;
             try {
                 ping = PseudoPing.ping("google.com", 1000);
-            }
-            catch (IOException e){
+            } catch (IOException e) {
                 ping = 0;
             }
             dataSeries.getData().add(0, new Data<>(0, ping));
