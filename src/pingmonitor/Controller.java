@@ -1,4 +1,4 @@
-package sample;
+package pingmonitor;
 
 public class Controller {
 }
