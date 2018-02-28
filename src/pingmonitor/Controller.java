@@ -14,9 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Controller implements Initializable{
-    XYChart.Series dataSeries;
+    private XYChart.Series dataSeries;
 
-    final int X_COUNT = 30;
+    private final int X_COUNT = 30;
 
     @FXML
     AreaChart<Integer, Integer> chart;
@@ -47,26 +47,24 @@ public class Controller implements Initializable{
         chart.getData().addAll(dataSeries);
         chart.setAnimated(false);
         chart.setLegendVisible(false);
+        chart.setTitle("Ping Monitor");
     }
 
-    public void update(){
-        ObservableList<XYChart.Data<Integer, Integer>> myData = dataSeries.getData();
-
-        myData.forEach(
+    private void update(){
+        Platform.runLater(() -> {
+            ((ObservableList<XYChart.Data<Integer, Integer>>)dataSeries.getData()).forEach(
                 (myItem) -> {
                     int oldXValue = myItem.getXValue();
                     myItem.setXValue(oldXValue + 1);
                 }
-        );
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                if(dataSeries.getData().size() > X_COUNT - 1){
-                    dataSeries.getData().remove(0);
-                }
-                dataSeries.getData().add(new XYChart.Data(0, new Random().nextInt(10)));
+            );
+            if(dataSeries.getData().size() > X_COUNT - 1){
+                dataSeries.getData().remove(X_COUNT - 1);
             }
+            dataSeries.getData().add(0, new XYChart.Data(0, new Random().nextInt(10)));
+
+            System.out.println(dataSeries.getData());
+
         });
     }
 }
