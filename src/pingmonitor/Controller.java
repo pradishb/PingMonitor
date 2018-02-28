@@ -7,7 +7,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -52,7 +54,7 @@ public class Controller implements Initializable{
 
     private void update(){
         Platform.runLater(() -> {
-            ((ObservableList<XYChart.Data<Integer, Integer>>)dataSeries.getData()).forEach(
+            ((ObservableList<Data<Integer, Integer>>)dataSeries.getData()).forEach(
                 (myItem) -> {
                     int oldXValue = myItem.getXValue();
                     myItem.setXValue(oldXValue + 1);
@@ -61,10 +63,15 @@ public class Controller implements Initializable{
             if(dataSeries.getData().size() > X_COUNT - 1){
                 dataSeries.getData().remove(X_COUNT - 1);
             }
-            dataSeries.getData().add(0, new XYChart.Data(0, new Random().nextInt(10)));
 
-            System.out.println(dataSeries.getData());
-
+            int ping;
+            try {
+                ping = PseudoPing.ping("google.com", 1000);
+            }
+            catch (IOException e){
+                ping = 0;
+            }
+            dataSeries.getData().add(0, new Data<>(0, ping));
         });
     }
 }
