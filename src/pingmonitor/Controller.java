@@ -49,7 +49,7 @@ public class Controller implements Initializable{
         chart.getData().addAll(dataSeries);
         chart.setAnimated(false);
         chart.setLegendVisible(false);
-        chart.setTitle("Ping Monitor");
+        chart.setTitle("Live Ping Data");
     }
 
     private void update(){
