@@ -2,12 +2,19 @@ package pingmonitor;
 
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.MenuItem;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +32,19 @@ public class Controller implements Initializable {
 
     @FXML
     NumberAxis xAxis;
+
+    @FXML
+    private void onPreferencesClick(final ActionEvent e) throws IOException {
+        Parent root = FXMLLoader.load(Main.class.getResource("PreferencesDialog.fxml"));
+
+        Stage dialogStage = new Stage();
+        dialogStage.setTitle("Preferences");
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(Main.primaryStage);
+        Scene scene = new Scene(root);
+        dialogStage.setScene(scene);
+        dialogStage.showAndWait();
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {

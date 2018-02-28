@@ -1,36 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0"
-          prefWidth="339.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="pingmonitor.Controller">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.Controller">
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints vgrow="NEVER"/>
-        <RowConstraints vgrow="SOMETIMES"/>
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
-    <AreaChart fx:id="chart" GridPane.rowIndex="1">
-        <xAxis>
-            <NumberAxis side="BOTTOM" fx:id="xAxis"/>
-        </xAxis>
-        <yAxis>
-            <NumberAxis side="LEFT"/>
-        </yAxis>
-    </AreaChart>
-    <MenuBar>
-        <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="Close"/>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
-            <MenuItem mnemonicParsing="false" text="Delete"/>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About"/>
-        </Menu>
-    </MenuBar>
+   <children>
+       <AreaChart fx:id="chart" GridPane.rowIndex="1">
+           <xAxis>
+               <NumberAxis side="BOTTOM" fx:id="xAxis" />
+           </xAxis>
+           <yAxis>
+               <NumberAxis side="LEFT" />
+           </yAxis>
+       </AreaChart>
+       <MenuBar>
+          <menus>
+              <Menu mnemonicParsing="false" text="File">
+                 <items>
+                     <MenuItem mnemonicParsing="false" text="Close" />
+                 </items>
+              </Menu>
+              <Menu mnemonicParsing="false" text="Edit">
+                 <items>
+                     <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem mnemonicParsing="false" onAction="#onPreferencesClick" text="Preferences" />
+                 </items>
+              </Menu>
+              <Menu mnemonicParsing="false" text="Help">
+                 <items>
+                     <MenuItem mnemonicParsing="false" text="About" />
+                 </items>
+              </Menu>
+          </menus>
+       </MenuBar>
+   </children>
 </GridPane>
