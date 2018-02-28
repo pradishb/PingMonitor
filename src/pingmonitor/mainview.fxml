@@ -2,11 +2,11 @@
 
 <?import javafx.scene.chart.*?>
 
-<AreaChart title="Ping Monitor v2" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.Controller">
+<AreaChart fx:id="chart" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.Controller">
   <xAxis>
-    <CategoryAxis side="BOTTOM" />
+    <NumberAxis side="BOTTOM" fx:id="xAxis" />
   </xAxis>
   <yAxis>
-    <NumberAxis side="LEFT" />
+    <NumberAxis fx:id="yAxis" side="LEFT" />
   </yAxis>
 </AreaChart>
