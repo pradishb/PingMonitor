@@ -20,6 +20,7 @@ class ExceptionDialog {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
+        e.printStackTrace();
         String exceptionText = sw.toString();
 
         Label label = new Label("The exception stacktrace was:");
