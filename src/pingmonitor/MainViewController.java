@@ -14,6 +14,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,12 +33,28 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
     private File myStyleClass = new File("style.css");
 
+    private int sum;
+    private int max;
+    private int min;
+    private int loss;
+
     @FXML
     AreaChart<Integer, Integer> chart;
 
     @FXML
     NumberAxis xAxis;
 
+    @FXML
+    private Label avgPingLabel;
+
+    @FXML
+    private Label highestPingLabel;
+
+    @FXML
+    private Label lowestPingLabel;
+
+    @FXML
+    private Label lossPercentLabel;
 
     @FXML
     private void onCloseClick(final ActionEvent e){
@@ -139,6 +156,41 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 ping = 0;
             }
             dataSeries.getData().add(0, new Data<>(0, ping));
+            updateAnalytics();
         });
+    }
+
+    private void updateAnalytics(){
+        sum = 0;
+        max = Integer.MIN_VALUE;
+        min = Integer.MAX_VALUE;
+        loss = 0;
+
+        ((ObservableList<Data<Integer, Integer>>)dataSeries.getData()).forEach(
+            (data) -> {
+                sum += data.getYValue();
+
+                if (data.getYValue() == 0){
+                    loss++;
+                }
+
+                if(data.getYValue() > max){
+                    max = data.getYValue();
+                }
+
+                if(data.getYValue() < min){
+                    min = data.getYValue();
+                }
+            }
+        );
+
+        int avg = ((dataSeries.getData().size() - loss == 0 ? 0 : sum / (dataSeries.getData().size() - loss)));
+        int lossPer = (dataSeries.getData().size() == 0 ? 0 : loss * 100 / dataSeries.getData().size());
+
+        avgPingLabel.setText("Average Ping: " + avg + "ms");
+        highestPingLabel.setText("Highest Ping: " + max + "ms");
+        lowestPingLabel.setText("Lowest Ping: " + min + "ms");
+        lossPercentLabel.setText("Loss: " + lossPer + "%");
+
     }
 }
