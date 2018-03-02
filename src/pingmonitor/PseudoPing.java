@@ -11,6 +11,8 @@ public class PseudoPing {
         if (!isPinged) {
             throw new IOException("Ping timeout.");
         }
+        if(ping > timeout)
+            return timeout;
         return ping;
     }
 }

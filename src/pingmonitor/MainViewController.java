@@ -99,7 +99,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         xAxis.setUpperBound(X_COUNT - 1);
         xAxis.setTickUnit(1);
         xAxis.setTickMarkVisible(false);
-        xAxis.setMinorTickVisible(false);
+        xAxis.setMinorTickCount(0);
         xAxis.setTickLabelsVisible(false);
 
         chart.getData().addAll(dataSeries);
@@ -107,7 +107,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.setLegendVisible(false);
         chart.setTitle("Live Ping Data");
         chart.setVerticalGridLinesVisible(false);
-//        chart.setCreateSymbols(false);
+        chart.setCreateSymbols(false);
         PreferencesUtils.loadPersonDataFromFile();
     }
 
@@ -133,7 +133,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             try (PrintWriter printWriter = new PrintWriter(myStyleClass)) {
                 printWriter.println(".default-color0.chart-series-area-line { -fx-stroke: rgba(" + rgb + ", 1); }");
                 printWriter.println(".default-color0.chart-series-area-fill { -fx-fill: rgba(" + rgb + ", .2)}");
-                printWriter.println(".chart-area-symbol { -fx-background-color: #FF0000, #FF0000; -fx-background-radius: 0;}");
+
                 chart.getStylesheets().clear();
                 chart.getStylesheets().add(myStyleClass.toURI().toString());
             }
@@ -167,15 +167,15 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
             dataSeries.getData().add(0, myData);
 
-            Iterator<Node> nodes = chart.lookupAll("StackPane").iterator();
-            Node last = nodes.next();
-            while(nodes.hasNext()){
-                last = nodes.next();
-            }
+//            Iterator<Node> nodes = chart.lookupAll("StackPane").iterator();
+//            Node last = nodes.next();
+//            while(nodes.hasNext()){
+//                last = nodes.next();
+//            }
 
-            if(!(boolean)myData.getExtraValue()){
-                last.setStyle("visibility: hidden");
-            }
+//            if(!(boolean)myData.getExtraValue()){
+//                last.setStyle("visibility: hidden");
+//            }
 
             updateAnalytics();
         });
