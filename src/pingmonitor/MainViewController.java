@@ -60,6 +60,9 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private Label lossPercentLabel;
 
     @FXML
+    private Label packetLossLabel;
+
+    @FXML
     private void onCloseClick(final ActionEvent e){
         Platform.exit();
     }
@@ -215,6 +218,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         highestPingLabel.setText("Highest Ping: " + max + "ms");
         lowestPingLabel.setText("Lowest Ping: " + min + "ms");
         lossPercentLabel.setText("Loss: " + lossPer + "%");
+        packetLossLabel.setText("Packet Loss: " + loss + " / " + dataSeries.getData().size());
 
     }
 }

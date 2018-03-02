@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.chart.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="405.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.MainViewController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="623.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.MainViewController">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
@@ -15,10 +15,9 @@
         <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints vgrow="SOMETIMES" />
       <RowConstraints vgrow="SOMETIMES" />
-      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
    <children>
-       <AreaChart fx:id="chart" GridPane.rowIndex="1">
+       <AreaChart fx:id="chart" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
            <xAxis>
                <NumberAxis side="BOTTOM" fx:id="xAxis" />
            </xAxis>
@@ -60,9 +59,10 @@
             <Label fx:id="highestPingLabel" text="Highest Ping:" GridPane.rowIndex="1" />
             <Label fx:id="lowestPingLabel" text="Lowest Ping:" GridPane.rowIndex="2" />
             <Label fx:id="lossPercentLabel" text="Loss:" GridPane.columnIndex="1" />
+            <Label fx:id="packetLossLabel" text="Packet Loss:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="5.0" />
          </padding>
       </GridPane>
    </children>
