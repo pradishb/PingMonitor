@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class MyPreferences {
     private String host;
     private int timeout;
-    private int refreshFrequency;
 
     @XmlJavaTypeAdapter(ColorAdapter.class)
     private Color graphColor;
@@ -26,14 +25,12 @@ public class MyPreferences {
     MyPreferences() {
         host = "google.com";
         timeout = 1000;
-        refreshFrequency = 1000;
         graphColor = new Color(0, 1.0, 0, 1.0);
     }
 
-    public MyPreferences(String host, int timeout, int refreshFrequency, Color graphColor) {
+    public MyPreferences(String host, int timeout, Color graphColor) {
         this.host = host;
         this.timeout = timeout;
-        this.refreshFrequency = refreshFrequency;
         this.graphColor = graphColor;
     }
 
@@ -51,14 +48,6 @@ public class MyPreferences {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    public int getRefreshFrequency() {
-        return refreshFrequency;
-    }
-
-    public void setRefreshFrequency(int refreshFrequency) {
-        this.refreshFrequency = refreshFrequency;
     }
 
     public Color getGraphColor() {

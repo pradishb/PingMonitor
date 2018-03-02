@@ -6,10 +6,13 @@ import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PreferencesUtils {
     static MyPreferences prefs = new MyPreferences();
     private static final String PREFERENCES_PATH = "preferences.xml";
+    private static List<PreferencesChangeListener> listeners = new ArrayList<>();
 
     public static void savePersonDataToFile() {
         try {
@@ -19,6 +22,7 @@ public class PreferencesUtils {
             marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             marshallerObj.marshal(prefs, new FileOutputStream(PREFERENCES_PATH));
+            listeners.forEach((x) -> x.onPreferencesChange(prefs));
         } catch (Exception e) {
             new ExceptionDialog(e);
         }
@@ -31,6 +35,7 @@ public class PreferencesUtils {
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             prefs = (MyPreferences) jaxbUnmarshaller.unmarshal(file);
+            listeners.forEach((x) -> x.onPreferencesChange(prefs));
         }
         catch (UnmarshalException e){
             savePersonDataToFile();
@@ -39,5 +44,17 @@ public class PreferencesUtils {
         catch (Exception e){
             new ExceptionDialog(e);
         }
+    }
+
+    interface PreferencesChangeListener{
+        void onPreferencesChange(MyPreferences prefs);
+    }
+
+    public static void addPreferencesChangeListener(PreferencesChangeListener listener){
+        listeners.add(listener);
+    }
+
+    public static void removePreferencesChangeListener(PreferencesChangeListener listener){
+        listeners.remove(listener);
     }
 }

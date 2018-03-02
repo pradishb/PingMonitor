@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-          prefWidth="500.0" vgap="10.0" xmlns="http://javafx.com/javafx/8">
+<GridPane hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="500.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.PreferencesDialogController">
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" hgrow="NEVER"/>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     </rowConstraints>
-    <TextField GridPane.columnIndex="1"/>
-    <Label text="Host:"/>
-    <Label text="Timeout:" GridPane.rowIndex="1"/>
-    <Label text="Refresh Frequency:" GridPane.rowIndex="2"/>
-    <TextField GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-    <TextField GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    <FlowPane hgap="10.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
-        <Button mnemonicParsing="false" text="Save"/>
-        <Button mnemonicParsing="false" text="Cancel"/>
-    </FlowPane>
-    <Label text="Graph Color:" GridPane.rowIndex="3"/>
-    <ColorPicker GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+   <children>
+       <TextField fx:id="hostText" GridPane.columnIndex="1" />
+       <Label text="Host:" />
+       <Label text="Timeout (ms):" GridPane.rowIndex="1" />
+       <TextField fx:id="timeoutText" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+       <FlowPane hgap="10.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+          <children>
+              <Button mnemonicParsing="false" onAction="#onSaveClick" text="Save" />
+              <Button mnemonicParsing="false" onAction="#onCancelClick" text="Cancel" />
+          </children>
+       </FlowPane>
+       <Label text="Graph Color:" GridPane.rowIndex="2" />
+       <ColorPicker fx:id="graphColorPicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+   </children>
     <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
 </GridPane>

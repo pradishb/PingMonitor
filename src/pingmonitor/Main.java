@@ -16,14 +16,6 @@ public class Main extends Application {
         primaryStage.setTitle("Ping Monitor");
         primaryStage.setScene(new Scene(root, 800, 500));
         primaryStage.show();
-//        PreferencesUtils.savePersonDataToFile();
-        PreferencesUtils.loadPersonDataFromFile();
-    }
-
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-        System.exit(0);
     }
 
     public static void main(String[] args) {

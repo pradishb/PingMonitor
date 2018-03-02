@@ -1,5 +1,6 @@
 package pingmonitor;
 
+import com.sun.javafx.css.StyleManager;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -7,25 +8,31 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.control.MenuItem;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class Controller implements Initializable {
+public class MainViewController implements Initializable, PreferencesUtils.PreferencesChangeListener {
     private XYChart.Series dataSeries;
+    private Timer t;
 
     private final int X_COUNT = 30;
+
+    private File myStyleClass = new File("style.css");
 
     @FXML
     AreaChart<Integer, Integer> chart;
@@ -48,28 +55,56 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        t = new Timer(true);
+        dataSeries = new XYChart.Series();
+        chart.getStylesheets().add(myStyleClass.toURI().toString());
+        chart.getStyleClass().add("default-color0.chart-area-symbol");
+
+        PreferencesUtils.addPreferencesChangeListener(this);
+
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
         xAxis.setUpperBound(X_COUNT - 1);
         xAxis.setTickUnit(1);
 
-        dataSeries = new XYChart.Series();
+        chart.getData().addAll(dataSeries);
+        chart.setAnimated(false);
+        chart.setLegendVisible(false);
+        chart.setTitle("Live Ping Data");
+        PreferencesUtils.loadPersonDataFromFile();
+    }
 
-        Timer t = new Timer();
-
+    @Override
+    public void onPreferencesChange(MyPreferences prefs){
+        t.cancel();
+        t = new Timer(true);
         t.schedule(new TimerTask() {
             @Override
             public void run() {
                 update();
             }
-        }, 0, 1000);
+        }, prefs.getTimeout(), prefs.getTimeout());
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        Color color = prefs.getGraphColor();
 
-        chart.getData().addAll(dataSeries);
-        chart.setAnimated(false);
-        chart.setLegendVisible(false);
-        chart.setTitle("Live Ping Data");
+        String rgb = String.format("%d, %d, %d",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
+
+        try {
+            try (PrintWriter printWriter = new PrintWriter(myStyleClass)) {
+                printWriter.println(".default-color0.chart-series-area-line { -fx-stroke: rgba(" + rgb + ", 1); }");
+                printWriter.println(".default-color0.chart-series-area-fill { -fx-fill: rgba(" + rgb + ", .2)}");
+                printWriter.println(".default-color0.chart-area-symbol { -fx-background-color: rgb(" + rgb + "), rgb(" + rgb + "); }");
+                chart.getStylesheets().clear();
+                chart.getStylesheets().add(myStyleClass.toURI().toString());
+            }
+
+        }
+        catch (IOException e){
+            new ExceptionDialog(e);
+        }
     }
 
     private void update() {
@@ -86,7 +121,7 @@ public class Controller implements Initializable {
 
             int ping;
             try {
-                ping = PseudoPing.ping("google.com", 1000);
+                ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
             } catch (IOException e) {
                 ping = 0;
             }
