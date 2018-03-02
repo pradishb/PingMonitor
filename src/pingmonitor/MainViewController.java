@@ -38,9 +38,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private int min;
     private int loss;
 
-    private int ping;
-    private boolean isLoss;
-
     @FXML
     AreaChart<Integer, Integer> chart;
 
@@ -136,7 +133,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             try (PrintWriter printWriter = new PrintWriter(myStyleClass)) {
                 printWriter.println(".default-color0.chart-series-area-line { -fx-stroke: rgba(" + rgb + ", 1); }");
                 printWriter.println(".default-color0.chart-series-area-fill { -fx-fill: rgba(" + rgb + ", .2)}");
-                printWriter.println(".chart-area-symbol { -fx-background-color: #FF0000, #FF0000; -fx-shape: \"M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2, 10 L0,10 L0,8 L4,5 L0,2 L0,0 Z\"; }");
+                printWriter.println(".chart-area-symbol { -fx-background-color: #FF0000, #FF0000; -fx-background-radius: 0;}");
                 chart.getStylesheets().clear();
                 chart.getStylesheets().add(myStyleClass.toURI().toString());
             }
@@ -148,12 +145,15 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void update() {
-        isLoss = false;
+        boolean isLoss = false;
+        int ping = PreferencesUtils.prefs.getTimeout();
         try {
             ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
         } catch (IOException e) {
             isLoss = true;
         }
+
+        final Data<Integer, Integer> myData = new Data<>(0, ping, isLoss);
         Platform.runLater(() -> {
             ((ObservableList<Data<Integer, Integer>>) dataSeries.getData()).forEach(
                     (myItem) -> {
@@ -165,7 +165,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 dataSeries.getData().remove(X_COUNT - 1);
             }
 
-            dataSeries.getData().add(0, new Data<>(0, ping, isLoss));
+            dataSeries.getData().add(0, myData);
 
             Iterator<Node> nodes = chart.lookupAll("StackPane").iterator();
             Node last = nodes.next();
@@ -173,7 +173,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 last = nodes.next();
             }
 
-            if(!isLoss){
+            if(!(boolean)myData.getExtraValue()){
                 last.setStyle("visibility: hidden");
             }
 

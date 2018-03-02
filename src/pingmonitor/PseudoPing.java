@@ -7,9 +7,10 @@ public class PseudoPing {
     public static int ping(String host, int timeout) throws IOException {
         long currentTime = System.currentTimeMillis();
         boolean isPinged = InetAddress.getByName(host).isReachable(timeout);
+        int ping = (int) (System.currentTimeMillis() - currentTime);
         if (!isPinged) {
             throw new IOException("Ping timeout.");
         }
-        return (int) (System.currentTimeMillis() - currentTime);
+        return ping;
     }
 }
