@@ -29,7 +29,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private XYChart.Series dataSeries;
     private Timer t;
 
-    private final int X_COUNT = 30;
+    private final int X_COUNT = 1000;
 
     private File myStyleClass = new File("style.css");
 
@@ -98,11 +98,16 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         xAxis.setLowerBound(0);
         xAxis.setUpperBound(X_COUNT - 1);
         xAxis.setTickUnit(1);
+        xAxis.setTickMarkVisible(false);
+        xAxis.setMinorTickVisible(false);
+        xAxis.setTickLabelsVisible(false);
 
         chart.getData().addAll(dataSeries);
         chart.setAnimated(false);
         chart.setLegendVisible(false);
         chart.setTitle("Live Ping Data");
+        chart.setVerticalGridLinesVisible(false);
+        chart.setCreateSymbols(false);
         PreferencesUtils.loadPersonDataFromFile();
     }
 
@@ -155,7 +160,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             if (dataSeries.getData().size() > X_COUNT - 1) {
                 dataSeries.getData().remove(X_COUNT - 1);
             }
-
             dataSeries.getData().add(0, new Data<>(0, ping));
             updateAnalytics();
         });
@@ -174,16 +178,18 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 if (data.getYValue() == 0){
                     loss++;
                 }
+                else if(data.getYValue() < min){
+                    min = data.getYValue();
+                }
 
                 if(data.getYValue() > max){
                     max = data.getYValue();
                 }
-
-                if(data.getYValue() < min){
-                    min = data.getYValue();
-                }
             }
         );
+        if(min == Integer.MAX_VALUE){
+            min = 0;
+        }
 
         int avg = ((dataSeries.getData().size() - loss == 0 ? 0 : sum / (dataSeries.getData().size() - loss)));
         int lossPer = (dataSeries.getData().size() == 0 ? 0 : loss * 100 / dataSeries.getData().size());
