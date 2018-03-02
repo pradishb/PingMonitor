@@ -38,6 +38,8 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private int min;
     private int loss;
 
+    private int ping;
+
     @FXML
     AreaChart<Integer, Integer> chart;
 
@@ -138,6 +140,11 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void update() {
+        try {
+            ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
+        } catch (IOException e) {
+            ping = 0;
+        }
         Platform.runLater(() -> {
             ((ObservableList<Data<Integer, Integer>>) dataSeries.getData()).forEach(
                     (myItem) -> {
@@ -149,12 +156,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 dataSeries.getData().remove(X_COUNT - 1);
             }
 
-            int ping;
-            try {
-                ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
-            } catch (IOException e) {
-                ping = 0;
-            }
             dataSeries.getData().add(0, new Data<>(0, ping));
             updateAnalytics();
         });
