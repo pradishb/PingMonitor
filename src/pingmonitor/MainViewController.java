@@ -39,6 +39,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private int loss;
 
     private int ping;
+    private boolean isLoss;
 
     @FXML
     AreaChart<Integer, Integer> chart;
@@ -90,7 +91,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         t = new Timer(true);
         dataSeries = new XYChart.Series();
         chart.getStylesheets().add(myStyleClass.toURI().toString());
-        chart.getStyleClass().add("default-color0.chart-area-symbol");
 
         PreferencesUtils.addPreferencesChangeListener(this);
 
@@ -107,7 +107,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.setLegendVisible(false);
         chart.setTitle("Live Ping Data");
         chart.setVerticalGridLinesVisible(false);
-        chart.setCreateSymbols(false);
+//        chart.setCreateSymbols(false);
         PreferencesUtils.loadPersonDataFromFile();
     }
 
@@ -133,7 +133,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             try (PrintWriter printWriter = new PrintWriter(myStyleClass)) {
                 printWriter.println(".default-color0.chart-series-area-line { -fx-stroke: rgba(" + rgb + ", 1); }");
                 printWriter.println(".default-color0.chart-series-area-fill { -fx-fill: rgba(" + rgb + ", .2)}");
-                printWriter.println(".default-color0.chart-area-symbol { -fx-background-color: rgb(" + rgb + "), rgb(" + rgb + "); }");
+                printWriter.println(".chart-area-symbol { -fx-background-color: #FF0000, #FF0000; -fx-shape: \"M2,0 L5,4 L8,0 L10,0 L10,2 L6,5 L10,8 L10,10 L8,10 L5,6 L2, 10 L0,10 L0,8 L4,5 L0,2 L0,0 Z\"; }");
                 chart.getStylesheets().clear();
                 chart.getStylesheets().add(myStyleClass.toURI().toString());
             }
@@ -145,10 +145,11 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void update() {
+        isLoss = false;
         try {
             ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
         } catch (IOException e) {
-            ping = 0;
+            isLoss = true;
         }
         Platform.runLater(() -> {
             ((ObservableList<Data<Integer, Integer>>) dataSeries.getData()).forEach(
@@ -160,7 +161,19 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             if (dataSeries.getData().size() > X_COUNT - 1) {
                 dataSeries.getData().remove(X_COUNT - 1);
             }
-            dataSeries.getData().add(0, new Data<>(0, ping));
+
+            dataSeries.getData().add(0, new Data<>(0, ping, isLoss));
+
+            Iterator<Node> nodes = chart.lookupAll("StackPane").iterator();
+            Node last = nodes.next();
+            while(nodes.hasNext()){
+                last = nodes.next();
+            }
+
+            if(!isLoss){
+                last.setStyle("visibility: hidden");
+            }
+
             updateAnalytics();
         });
     }
@@ -173,23 +186,27 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
         ((ObservableList<Data<Integer, Integer>>)dataSeries.getData()).forEach(
             (data) -> {
-                sum += data.getYValue();
-
-                if (data.getYValue() == 0){
+                if ((boolean)data.getExtraValue()){
                     loss++;
                 }
-                else if(data.getYValue() < min){
-                    min = data.getYValue();
-                }
-
-                if(data.getYValue() > max){
-                    max = data.getYValue();
+                else{
+                    sum += data.getYValue();
+                    if(data.getYValue() < min){
+                        min = data.getYValue();
+                    }
+                    if(data.getYValue() > max){
+                        max = data.getYValue();
+                    }
                 }
             }
         );
         if(min == Integer.MAX_VALUE){
             min = 0;
         }
+        if(max == Integer.MIN_VALUE){
+            max = 0;
+        }
+
 
         int avg = ((dataSeries.getData().size() - loss == 0 ? 0 : sum / (dataSeries.getData().size() - loss)));
         int lossPer = (dataSeries.getData().size() == 0 ? 0 : loss * 100 / dataSeries.getData().size());
