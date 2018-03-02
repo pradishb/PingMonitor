@@ -12,9 +12,9 @@ import java.io.StringWriter;
 class ExceptionDialog {
     ExceptionDialog(Exception e){
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Exception Dialog");
-        alert.setHeaderText("Exception");
-        alert.setContentText("An exception occurred.");
+        alert.setTitle("Exception!");
+        alert.setHeaderText("Exception Occurred");
+        alert.setContentText(e.toString());
 
 // Create expandable Exception.
         StringWriter sw = new StringWriter();
