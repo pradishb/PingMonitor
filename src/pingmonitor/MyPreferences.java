@@ -25,7 +25,7 @@ public class MyPreferences {
     MyPreferences() {
         host = "google.com";
         timeout = 1000;
-        graphColor = new Color(0, 1.0, 0, 1.0);
+        graphColor = new Color(.2, .5, 1, 1.0);
     }
 
     public MyPreferences(String host, int timeout, Color graphColor) {
