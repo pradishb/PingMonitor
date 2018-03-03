@@ -15,6 +15,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,7 +30,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private XYChart.Series dataSeries;
     private Timer t;
 
-    private final int X_COUNT = 1000;
+    private final int X_COUNT = 200;
 
     private File myStyleClass = new File("style.css");
 
@@ -38,11 +39,10 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private int min;
     private int loss;
 
-    @FXML
-    AreaChart<Integer, Integer> chart;
+    private MyAreaChart chart;
 
     @FXML
-    NumberAxis xAxis;
+    private GridPane gridPane;
 
     @FXML
     private Label avgPingLabel;
@@ -90,9 +90,14 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     public void initialize(URL url, ResourceBundle rb) {
         t = new Timer(true);
         dataSeries = new XYChart.Series();
+
+        NumberAxis xAxis = new NumberAxis();
+        chart = new MyAreaChart(xAxis, new NumberAxis());
         chart.getStylesheets().add(myStyleClass.toURI().toString());
 
         PreferencesUtils.addPreferencesChangeListener(this);
+
+
 
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
@@ -108,6 +113,8 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.setTitle("Live Ping Data");
         chart.setVerticalGridLinesVisible(false);
         chart.setCreateSymbols(false);
+
+        gridPane.add(chart, 0, 1);
         PreferencesUtils.loadPersonDataFromFile();
     }
 
@@ -166,16 +173,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             }
 
             dataSeries.getData().add(0, myData);
-
-//            Iterator<Node> nodes = chart.lookupAll("StackPane").iterator();
-//            Node last = nodes.next();
-//            while(nodes.hasNext()){
-//                last = nodes.next();
-//            }
-
-//            if(!(boolean)myData.getExtraValue()){
-//                last.setStyle("visibility: hidden");
-//            }
 
             updateAnalytics();
         });
