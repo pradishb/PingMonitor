@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class MainViewController implements Initializable, PreferencesUtils.PreferencesChangeListener {
@@ -166,6 +167,13 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
                 ping = 0;
             }
         }
+
+        int key = SQLiteJDBCDriverConnection.insertPing(new Timestamp(System.currentTimeMillis()), ping);
+        if(isLoss){
+            SQLiteJDBCDriverConnection.insertLoss(key);
+        }
+
+
 
         final Data<Integer, Integer> myData = new Data<>(0, ping, isLoss);
         Platform.runLater(() -> {
