@@ -13,6 +13,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -98,8 +99,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.getStylesheets().add(myStyleClass.toURI().toString());
 
         PreferencesUtils.addPreferencesChangeListener(this);
-
-
 
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
