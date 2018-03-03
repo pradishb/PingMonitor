@@ -116,7 +116,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.setVerticalGridLinesVisible(false);
         chart.setCreateSymbols(false);
 
-        gridPane.add(chart, 0, 1);
+        gridPane.add(chart, 0, 0, 2, 1);
         PreferencesUtils.loadPersonDataFromFile();
     }
 
