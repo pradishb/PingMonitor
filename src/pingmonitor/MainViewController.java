@@ -127,7 +127,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             public void run() {
                 update();
             }
-        }, prefs.getTimeout(), prefs.getTimeout());
+        }, prefs.getTimeout() + 1000, prefs.getTimeout());
 
         Color color = prefs.getGraphColor();
 
@@ -153,11 +153,17 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
     private void update() {
         boolean isLoss = false;
-        int ping = PreferencesUtils.prefs.getTimeout();
+        int ping;
         try {
             ping = PseudoPing.ping(PreferencesUtils.prefs.getHost(), PreferencesUtils.prefs.getTimeout());
         } catch (IOException e) {
             isLoss = true;
+            try {
+                ping = ((Data<Integer, Integer>) dataSeries.getData().get(0)).getYValue();
+            }
+            catch (IndexOutOfBoundsException ex){
+                ping = 0;
+            }
         }
 
         final Data<Integer, Integer> myData = new Data<>(0, ping, isLoss);
