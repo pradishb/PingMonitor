@@ -4,6 +4,7 @@
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -13,11 +14,10 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import pingmonitor.TimeSpinner?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="623.0" prefWidth="713.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.MainViewController">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="630.0" prefWidth="772.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pingmonitor.MainViewController">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
@@ -105,31 +105,33 @@
                               <NumberAxis side="LEFT" />
                            </yAxis>
                         </BarChart>
-                        <GridPane fx:id="gridPane1" hgap="30.0" vgap="10.0" GridPane.rowIndex="1">
+                        <GridPane fx:id="gridPane1" hgap="10.0" prefWidth="786.0" vgap="10.0" GridPane.rowIndex="1">
                            <children>
-                              <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER">
-                                 <children>
-                                    <Label minWidth="-Infinity" text="Start:" />
-                                    <DatePicker />
-                                    <TimeSpinner />
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER">
-                                 <children>
-                                    <Label minWidth="-Infinity" text="End:" />
-                                    <DatePicker />
-                                    <TimeSpinner />
-                                 </children>
-                              </HBox>
+                              <Label minWidth="-Infinity" text="Start:" GridPane.rowIndex="2" />
+                              <Label minWidth="-Infinity" text="Range:" GridPane.rowIndex="1" />
+                              <TimeSpinner GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <ChoiceBox prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <DatePicker GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <TimeSpinner GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <Label minWidth="-Infinity" text="Range:" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <Label minWidth="-Infinity" text="Divide By:" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                            </children>
                            <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" percentWidth="50.0" />
+                              <ColumnConstraints hgrow="ALWAYS" />
+                              <ColumnConstraints hgrow="NEVER" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
+                              <ColumnConstraints hgrow="SOMETIMES" />
                            </columnConstraints>
                            <padding>
-                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
                            </padding>
                            <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
                               <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" vgrow="NEVER" />
                            </rowConstraints>
                         </GridPane>
