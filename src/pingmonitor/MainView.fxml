@@ -109,13 +109,13 @@
                            <children>
                               <Label minWidth="-Infinity" text="Start:" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="Range:" GridPane.rowIndex="1" />
-                              <TimeSpinner GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <DatePicker GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <ChoiceBox prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <DatePicker GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <TimeSpinner GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                              <Label minWidth="-Infinity" text="Range:" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                              <TimeSpinner fx:id="startTimeSpinner" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <DatePicker fx:id="startDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <ChoiceBox fx:id="rangeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <ChoiceBox fx:id="divideCheckBox" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <DatePicker fx:id="endDatePicker" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <TimeSpinner fx:id="endTimeSpinner" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <Label minWidth="-Infinity" text="End:" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="Divide By:" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                            </children>
                            <columnConstraints>
