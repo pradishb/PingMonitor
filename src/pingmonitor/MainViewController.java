@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.event.InputEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -99,6 +101,12 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     @FXML
+    private void onDateChange(final ActionEvent e){
+        System.out.println(e.getSource());
+        changeDivideBy();
+    }
+
+    @FXML
     private void onPreferencesClick(final ActionEvent e) throws IOException {
         Parent root = FXMLLoader.load(Main.class.getResource("PreferencesDialog.fxml"));
 
@@ -142,10 +150,12 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         rangeChoiceBox.getItems().add("Today");
         rangeChoiceBox.getItems().add("Last Week");
         rangeChoiceBox.getItems().add("Last Month");
-        rangeChoiceBox.getItems().add("Custom");
         rangeChoiceBox.setValue("Last 5 minutes");
 
         rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> changeStartAndEnd(z));
+        startTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
+        endTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
+
         changeStartAndEnd(0);
         changeDivideBy();
 
@@ -314,20 +324,25 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         values.put("1 hour", 60*60);
         values.put("1 day", 60*60*24);
 
-        int minNumber = 5;
-        int maxNumber = 30;
+        int minNumber = 1;
+        int maxNumber = 50;
 
         LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
         LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
 
         Duration duration = Duration.between(start, end);
 
+        divideChoiceBox.getItems().clear();
         for(String key: values.keySet()){
             int numberOfValues = (int)duration.getSeconds()/values.get(key);
 
             if(numberOfValues <= maxNumber && numberOfValues >= minNumber){
                 divideChoiceBox.getItems().add(key);
             }
+        }
+
+        if(divideChoiceBox.getItems().size()== 0){
+            divideChoiceBox.getItems().add("None");
         }
         divideChoiceBox.setValue(divideChoiceBox.getItems().get(0));
 
