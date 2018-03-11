@@ -1,7 +1,8 @@
 package pingmonitor;
 
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +13,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -24,10 +26,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.time.*;
 import java.util.*;
 
 public class MainViewController implements Initializable, PreferencesUtils.PreferencesChangeListener {
-    private XYChart.Series dataSeries;
+    private XYChart.Series<Integer, Integer> dataSeries;
     private Timer t;
 
     private final int X_COUNT = 200;
@@ -62,6 +65,25 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     @FXML
     private Label fluctuationLabel;
 
+    //analytics tab
+    @FXML
+    private ChoiceBox<String> rangeChoiceBox;
+
+    @FXML
+    private ChoiceBox<String> divideChoiceBox;
+
+    @FXML
+    private DatePicker startDatePicker;
+
+    @FXML
+    private TimeSpinner startTimeSpinner;
+
+    @FXML
+    private DatePicker endDatePicker;
+
+    @FXML
+    private TimeSpinner endTimeSpinner;
+
     @FXML
     private void onCloseClick(final ActionEvent e){
         Platform.exit();
@@ -92,7 +114,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         t = new Timer(true);
-        dataSeries = new XYChart.Series();
+        dataSeries = new XYChart.Series<>();
 
         NumberAxis xAxis = new NumberAxis();
         chart = new MyAreaChart(xAxis, new NumberAxis());
@@ -108,12 +130,24 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         xAxis.setMinorTickCount(0);
         xAxis.setTickLabelsVisible(false);
 
-        chart.getData().addAll(dataSeries);
+        chart.getData().addAll((XYChart.Series) dataSeries);
         chart.setAnimated(false);
         chart.setLegendVisible(false);
         chart.setTitle("Live Ping Data");
         chart.setVerticalGridLinesVisible(false);
         chart.setCreateSymbols(false);
+
+        rangeChoiceBox.getItems().add("Last 5 minutes");
+        rangeChoiceBox.getItems().add("Last 30 minutes");
+        rangeChoiceBox.getItems().add("Today");
+        rangeChoiceBox.getItems().add("Last Week");
+        rangeChoiceBox.getItems().add("Last Month");
+        rangeChoiceBox.getItems().add("Custom");
+        rangeChoiceBox.setValue("Last 5 minutes");
+
+        rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> changeStartAndEnd(z));
+        changeStartAndEnd(0);
+        changeDivideBy();
 
         gridPane.add(chart, 0, 0, 2, 1);
         PreferencesUtils.loadPersonDataFromFile();
@@ -160,7 +194,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         } catch (IOException e) {
             isLoss = true;
             try {
-                ping = ((Data<Integer, Integer>) dataSeries.getData().get(0)).getYValue();
+                ping = (dataSeries.getData().get(0)).getYValue();
             }
             catch (IndexOutOfBoundsException ex){
                 ping = 0;
@@ -176,7 +210,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
         final Data<Integer, Integer> myData = new Data<>(0, ping, isLoss);
         Platform.runLater(() -> {
-            ((ObservableList<Data<Integer, Integer>>) dataSeries.getData()).forEach(
+            (dataSeries.getData()).forEach(
                     (myItem) -> {
                         int oldXValue = myItem.getXValue();
                         myItem.setXValue(oldXValue + 1);
@@ -198,7 +232,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         min = Integer.MAX_VALUE;
         loss = 0;
 
-        ((ObservableList<Data<Integer, Integer>>)dataSeries.getData()).forEach(
+        (dataSeries.getData()).forEach(
             (data) -> {
                 if ((boolean)data.getExtraValue()){
                     loss++;
@@ -231,6 +265,71 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         lossPercentLabel.setText("Loss: " + lossPer + "%");
         packetLossLabel.setText("Packet Loss: " + loss + " / " + dataSeries.getData().size());
         fluctuationLabel.setText("Fluctuation: " + (max - min) + "ms");
+    }
+
+    private void changeStartAndEnd(Number index){
+        switch (rangeChoiceBox.getItems().get(index.intValue())){
+            case "Last 5 minutes":
+                startDatePicker.setValue(LocalDateTime.now().minusMinutes(5).toLocalDate());
+                endDatePicker.setValue(LocalDate.now());
+                startTimeSpinner.getValueFactory().setValue(LocalTime.now().minusMinutes(5));
+                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                break;
+
+            case "Last 30 minutes":
+                startDatePicker.setValue(LocalDateTime.now().minusMinutes(30).toLocalDate());
+                endDatePicker.setValue(LocalDate.now());
+                startTimeSpinner.getValueFactory().setValue(LocalTime.now().minusMinutes(30));
+                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                break;
+
+            case "Today":
+                startDatePicker.setValue(LocalDate.now());
+                endDatePicker.setValue(LocalDate.now());
+                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
+                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                break;
+
+            case "Last Week":
+                startDatePicker.setValue(LocalDate.now().minusWeeks(1));
+                endDatePicker.setValue(LocalDate.now());
+                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
+                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                break;
+
+            case "Last Month":
+                startDatePicker.setValue(LocalDate.now().minusMonths(1));
+                endDatePicker.setValue(LocalDate.now());
+                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
+                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                break;
+        }
+    }
+
+    private void changeDivideBy(){
+        HashMap<String, Integer> values = new HashMap<>();
+        values.put("20 seconds", 20);
+        values.put("1 minute", 60);
+        values.put("5 minutes", 60*5);
+        values.put("1 hour", 60*60);
+        values.put("1 day", 60*60*24);
+
+        int minNumber = 5;
+        int maxNumber = 30;
+
+        LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
+        LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
+
+        Duration duration = Duration.between(start, end);
+
+        for(String key: values.keySet()){
+            int numberOfValues = (int)duration.getSeconds()/values.get(key);
+
+            if(numberOfValues <= maxNumber && numberOfValues >= minNumber){
+                divideChoiceBox.getItems().add(key);
+            }
+        }
+        divideChoiceBox.setValue(divideChoiceBox.getItems().get(0));
 
     }
 }

@@ -88,14 +88,14 @@
                   </GridPane>
                </content>
                <content>
-                  <GridPane>
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                      <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
-                    </rowConstraints>
+                  <GridPane prefHeight="419.0" prefWidth="537.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
                         <BarChart title="Analytics">
                            <xAxis>
@@ -105,14 +105,14 @@
                               <NumberAxis side="LEFT" />
                            </yAxis>
                         </BarChart>
-                        <GridPane fx:id="gridPane1" hgap="10.0" prefWidth="786.0" vgap="10.0" GridPane.rowIndex="1">
+                        <GridPane fx:id="gridPane1" hgap="10.0" prefWidth="625.0" vgap="10.0" GridPane.rowIndex="1">
                            <children>
                               <Label minWidth="-Infinity" text="Start:" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="Range:" GridPane.rowIndex="1" />
                               <TimeSpinner fx:id="startTimeSpinner" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                               <DatePicker fx:id="startDatePicker" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <ChoiceBox fx:id="rangeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <ChoiceBox fx:id="divideCheckBox" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <ChoiceBox fx:id="divideChoiceBox" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                               <DatePicker fx:id="endDatePicker" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                               <TimeSpinner fx:id="endTimeSpinner" GridPane.columnIndex="5" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="End:" GridPane.columnIndex="3" GridPane.rowIndex="2" />
