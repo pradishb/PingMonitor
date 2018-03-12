@@ -1,15 +1,13 @@
 package pingmonitor;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -22,7 +20,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.event.InputEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,6 +42,9 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private int loss;
 
     private MyAreaChart chart;
+
+    @FXML
+    private BarChart<Number, Number> barChart;
 
     @FXML
     private GridPane gridPane;
@@ -102,7 +102,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
     @FXML
     private void onDateChange(final ActionEvent e){
-        System.out.println(e.getSource());
         changeDivideBy();
     }
 
@@ -144,6 +143,9 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         chart.setTitle("Live Ping Data");
         chart.setVerticalGridLinesVisible(false);
         chart.setCreateSymbols(false);
+
+        barChart.setLegendVisible(false);
+        barChart.setAnimated(false);
 
         rangeChoiceBox.getItems().add("Last 5 minutes");
         rangeChoiceBox.getItems().add("Last 30 minutes");
@@ -278,40 +280,44 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void changeStartAndEnd(Number index){
+
+        LocalDate nowDate = LocalDate.now();
+        LocalTime nowTime = LocalTime.now();
+        LocalDateTime nowDateTime = LocalDateTime.of(nowDate, nowTime);
         switch (rangeChoiceBox.getItems().get(index.intValue())){
             case "Last 5 minutes":
-                startDatePicker.setValue(LocalDateTime.now().minusMinutes(5).toLocalDate());
-                endDatePicker.setValue(LocalDate.now());
-                startTimeSpinner.getValueFactory().setValue(LocalTime.now().minusMinutes(5));
-                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                startDatePicker.setValue(nowDateTime.minusMinutes(5).toLocalDate());
+                endDatePicker.setValue(nowDate);
+                startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(5));
+                endTimeSpinner.getValueFactory().setValue(nowTime);
                 break;
 
             case "Last 30 minutes":
-                startDatePicker.setValue(LocalDateTime.now().minusMinutes(30).toLocalDate());
-                endDatePicker.setValue(LocalDate.now());
-                startTimeSpinner.getValueFactory().setValue(LocalTime.now().minusMinutes(30));
-                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                startDatePicker.setValue(nowDateTime.minusMinutes(30).toLocalDate());
+                endDatePicker.setValue(nowDate);
+                startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(30));
+                endTimeSpinner.getValueFactory().setValue(nowTime);
                 break;
 
             case "Today":
-                startDatePicker.setValue(LocalDate.now());
-                endDatePicker.setValue(LocalDate.now());
+                startDatePicker.setValue(nowDate);
+                endDatePicker.setValue(nowDate);
                 startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                endTimeSpinner.getValueFactory().setValue(nowTime);
                 break;
 
             case "Last Week":
-                startDatePicker.setValue(LocalDate.now().minusWeeks(1));
-                endDatePicker.setValue(LocalDate.now());
+                startDatePicker.setValue(nowDate.minusWeeks(1));
+                endDatePicker.setValue(nowDate);
                 startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                endTimeSpinner.getValueFactory().setValue(nowTime);
                 break;
 
             case "Last Month":
-                startDatePicker.setValue(LocalDate.now().minusMonths(1));
-                endDatePicker.setValue(LocalDate.now());
+                startDatePicker.setValue(nowDate.minusMonths(1));
+                endDatePicker.setValue(nowDate);
                 startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(LocalTime.now());
+                endTimeSpinner.getValueFactory().setValue(nowTime);
                 break;
         }
     }
@@ -345,6 +351,25 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             divideChoiceBox.getItems().add("None");
         }
         divideChoiceBox.setValue(divideChoiceBox.getItems().get(0));
+        changeBarChart(values.get(divideChoiceBox.getItems().get(0)));
+    }
 
+    private void changeBarChart(int divider){
+        XYChart.Series series1 = new XYChart.Series();
+
+        LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
+        LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
+
+        int count = 0;
+        while(start.plusSeconds(divider).compareTo(end) <= 0){
+            System.out.print(count + "    " + SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end)) + "x ");
+            series1.getData().add(new XYChart.Data(start.toString(), SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            start = start.plusSeconds(divider);
+            System.out.println("      " + start + "      " + end);
+        }
+        System.out.println();
+
+        barChart.getData().clear();
+        barChart.getData().addAll(series1);
     }
 }

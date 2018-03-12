@@ -97,7 +97,7 @@
                         <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <BarChart title="Analytics">
+                        <BarChart fx:id="barChart" title="Analytics">
                            <xAxis>
                               <CategoryAxis side="BOTTOM" />
                            </xAxis>

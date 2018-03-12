@@ -6,6 +6,7 @@ import java.sql.*;
 public class SQLiteJDBCDriverConnection {
     private static PreparedStatement insertPingStmt;
     private static PreparedStatement insertLossStmt;
+    private static PreparedStatement getRangeValueStmt;
 
     private static Connection conn;
     /**
@@ -41,6 +42,8 @@ public class SQLiteJDBCDriverConnection {
                             " VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
 
             insertLossStmt = conn.prepareStatement("INSERT INTO loss(pingId) VALUES (?)");
+
+            getRangeValueStmt = conn.prepareStatement("SELECT AVG(ping) AS value FROM pings WHERE time > ? and time < ?");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -80,5 +83,19 @@ public class SQLiteJDBCDriverConnection {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static int getRangeValue(Timestamp start, Timestamp end){
+        try {
+            getRangeValueStmt.setTimestamp(1, start);
+            getRangeValueStmt.setTimestamp(2, end);
+            ResultSet rs = getRangeValueStmt.executeQuery();
+            return rs.getInt("value");
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            return -1;
+        }
+
     }
 }
