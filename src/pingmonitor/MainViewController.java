@@ -44,7 +44,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private MyAreaChart chart;
 
     @FXML
-    private BarChart<Number, Number> barChart;
+    private BarChart barChart;
 
     @FXML
     private GridPane gridPane;
@@ -213,9 +213,11 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             }
         }
 
-        int key = SQLiteJDBCDriverConnection.insertPing(new Timestamp(System.currentTimeMillis()), ping);
         if(isLoss){
-            SQLiteJDBCDriverConnection.insertLoss(key);
+            SQLiteJDBCDriverConnection.insertLoss(new Timestamp(System.currentTimeMillis()));
+        }
+        else{
+            SQLiteJDBCDriverConnection.insertPing(new Timestamp(System.currentTimeMillis()), ping);
         }
 
 

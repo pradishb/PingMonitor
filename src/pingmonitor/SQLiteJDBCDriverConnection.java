@@ -32,56 +32,41 @@ public class SQLiteJDBCDriverConnection {
 
             stmt.execute("CREATE TABLE IF NOT EXISTS loss (\n"
                     + "	id integer PRIMARY KEY,\n"
-                    + "	pingId text NOT NULL\n"
+                    + "	time timestamp NOT NULL\n"
                     + ");");
 
             System.out.println("Tables has been created.");
 
             insertPingStmt = conn.prepareStatement(
-                    "INSERT INTO pings( time, ping)" +
-                            " VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+                    "INSERT INTO pings(time, ping)" +
+                            " VALUES (?, ?)");
 
-            insertLossStmt = conn.prepareStatement("INSERT INTO loss(pingId) VALUES (?)");
+            insertLossStmt = conn.prepareStatement("INSERT INTO loss(time) VALUES (?)");
 
             getRangeValueStmt = conn.prepareStatement("SELECT AVG(ping) AS value FROM pings WHERE time > ? and time < ?");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } finally {
-//            try {
-//                if (conn != null) {
-//                    conn.close();
-//                }
-//            } catch (SQLException ex) {
-//                System.out.println(ex.getMessage());
-//            }
         }
     }
 
-    public static int insertPing(Timestamp time, int ping){
+    public static void insertPing(Timestamp time, int ping){
         try {
             insertPingStmt.setTimestamp(1, time);
             insertPingStmt.setInt(2, ping);
             insertPingStmt.executeUpdate();
-
-            ResultSet rs = insertPingStmt.getGeneratedKeys();
-
-            return rs.getInt(1);
         }
         catch (SQLException e){
             e.printStackTrace();
-            return -1;
         }
     }
 
-    public static boolean insertLoss(int pingId){
+    public static void insertLoss(Timestamp time){
         try {
-            insertLossStmt.setInt(1, pingId);
+            insertLossStmt.setTimestamp(1, time);
             insertLossStmt.executeUpdate();
-            return true;
         }
         catch (SQLException e){
             e.printStackTrace();
-            return false;
         }
     }
 
