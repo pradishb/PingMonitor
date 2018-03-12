@@ -26,9 +26,12 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class MainViewController implements Initializable, PreferencesUtils.PreferencesChangeListener {
+    private HashMap<String, Integer> values = new HashMap<>();
+
     private XYChart.Series<Integer, Integer> dataSeries;
     private Timer t;
 
@@ -44,7 +47,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     private MyAreaChart chart;
 
     @FXML
-    private BarChart barChart;
+    private BarChart<String, Integer> barChart;
 
     @FXML
     private GridPane gridPane;
@@ -154,7 +157,16 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         rangeChoiceBox.getItems().add("Last Month");
         rangeChoiceBox.setValue("Last 5 minutes");
 
+        values.put("20 seconds", 20);
+        values.put("1 minute", 60);
+        values.put("5 minutes", 60*5);
+        values.put("1 hour", 60*60);
+        values.put("1 day", 60*60*24);
+
         rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> changeStartAndEnd(z));
+        divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
+            changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
+        });
         startTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
         endTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
 
@@ -325,13 +337,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void changeDivideBy(){
-        HashMap<String, Integer> values = new HashMap<>();
-        values.put("20 seconds", 20);
-        values.put("1 minute", 60);
-        values.put("5 minutes", 60*5);
-        values.put("1 hour", 60*60);
-        values.put("1 day", 60*60*24);
-
         int minNumber = 1;
         int maxNumber = 50;
 
@@ -357,21 +362,48 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     private void changeBarChart(int divider){
-        XYChart.Series series1 = new XYChart.Series();
+        XYChart.Series<String, Integer> series = new XYChart.Series<>();
 
         LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
         LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
+        Duration duration = Duration.between(start, end);
 
-        int count = 0;
         while(start.plusSeconds(divider).compareTo(end) <= 0){
-            System.out.print(count + "    " + SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end)) + "x ");
-            series1.getData().add(new XYChart.Data(start.toString(), SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            System.out.print(SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end)));
+            System.out.print(duration.compareTo(Duration.ofDays(7)));
+            if(divider < 60){               //seconds
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:s")),
+                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
+                        Timestamp.valueOf(end))));
+            }
+            else if(divider < 60*60){      //minutes
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("h:m")),
+                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
+                                Timestamp.valueOf(end))));
+            }
+            else if(divider < 60*60*24){    //hour
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, h:00")),
+                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            }
+            else if(divider < 60*60*24*7) { //week
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, EEE")),
+                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            }
+            else if(divider < 60*60*24*7*30) {  //day
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d")),
+                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            }
+            else {
+                series.getData().add(new Data<>(start.toString(), SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+            }
+
+
             start = start.plusSeconds(divider);
             System.out.println("      " + start + "      " + end);
         }
         System.out.println();
 
         barChart.getData().clear();
-        barChart.getData().addAll(series1);
+        barChart.getData().addAll(series);
     }
 }
