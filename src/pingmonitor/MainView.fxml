@@ -109,12 +109,12 @@
                            <children>
                               <Label minWidth="-Infinity" text="Start:" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="Range:" GridPane.rowIndex="1" />
-                              <TimeSpinner fx:id="startTimeSpinner" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                              <DatePicker fx:id="startDatePicker" onAction="#onDateChange" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TimeSpinner fx:id="startTimeSpinner" disable="true" editable="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                              <DatePicker fx:id="startDatePicker" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                               <ChoiceBox fx:id="rangeChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <ChoiceBox fx:id="divideChoiceBox" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <DatePicker fx:id="endDatePicker" onAction="#onDateChange" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                              <TimeSpinner fx:id="endTimeSpinner" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <DatePicker fx:id="endDatePicker" disable="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <TimeSpinner fx:id="endTimeSpinner" disable="true" editable="true" GridPane.columnIndex="5" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="End:" GridPane.columnIndex="3" GridPane.rowIndex="2" />
                               <Label minWidth="-Infinity" text="Divide By:" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                            </children>

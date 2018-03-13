@@ -1,6 +1,8 @@
 package pingmonitor;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -104,11 +106,6 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
     }
 
     @FXML
-    private void onDateChange(final ActionEvent e){
-        changeDivideBy();
-    }
-
-    @FXML
     private void onPreferencesClick(final ActionEvent e) throws IOException {
         Parent root = FXMLLoader.load(Main.class.getResource("PreferencesDialog.fxml"));
 
@@ -155,6 +152,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         rangeChoiceBox.getItems().add("Today");
         rangeChoiceBox.getItems().add("Last Week");
         rangeChoiceBox.getItems().add("Last Month");
+        rangeChoiceBox.getItems().add("Custom");
         rangeChoiceBox.setValue("Last 5 minutes");
 
         values.put("20 seconds", 20);
@@ -163,13 +161,14 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         values.put("1 hour", 60*60);
         values.put("1 day", 60*60*24);
 
-        rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> changeStartAndEnd(z));
+        rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
+            changeStartAndEnd(z);
+            changeDivideBy();
+        });
         divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
             if(z.intValue() != -1)
                 changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
         });
-        startTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
-        endTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
 
         changeStartAndEnd(0);
         changeDivideBy();
@@ -299,41 +298,67 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         LocalDate nowDate = LocalDate.now();
         LocalTime nowTime = LocalTime.now();
         LocalDateTime nowDateTime = LocalDateTime.of(nowDate, nowTime);
-        switch (rangeChoiceBox.getItems().get(index.intValue())){
-            case "Last 5 minutes":
-                startDatePicker.setValue(nowDateTime.minusMinutes(5).toLocalDate());
-                endDatePicker.setValue(nowDate);
-                startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(5));
-                endTimeSpinner.getValueFactory().setValue(nowTime);
-                break;
+        ChangeListener<LocalTime> timeListener = (x, y, z) -> changeDivideBy();
+        ChangeListener<LocalDate> dateListener = (x, y, z) -> changeDivideBy();
 
-            case "Last 30 minutes":
-                startDatePicker.setValue(nowDateTime.minusMinutes(30).toLocalDate());
-                endDatePicker.setValue(nowDate);
-                startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(30));
-                endTimeSpinner.getValueFactory().setValue(nowTime);
-                break;
+        if(rangeChoiceBox.getItems().get(index.intValue()).equals("Custom")){
+            startDatePicker.setDisable(false);
+            startTimeSpinner.setDisable(false);
+            endDatePicker.setDisable(false);
+            endTimeSpinner.setDisable(false);
 
-            case "Today":
-                startDatePicker.setValue(nowDate);
-                endDatePicker.setValue(nowDate);
-                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(nowTime);
-                break;
+            startTimeSpinner.valueProperty().addListener(timeListener);
+            endTimeSpinner.valueProperty().addListener(timeListener);
+            startDatePicker.valueProperty().addListener(dateListener);
+            endDatePicker.valueProperty().addListener(dateListener);
+        }
+        else {
+            startDatePicker.setDisable(true);
+            startTimeSpinner.setDisable(true);
+            endDatePicker.setDisable(true);
+            endTimeSpinner.setDisable(true);
 
-            case "Last Week":
-                startDatePicker.setValue(nowDate.minusWeeks(1));
-                endDatePicker.setValue(nowDate);
-                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(nowTime);
-                break;
+            startTimeSpinner.valueProperty().removeListener(timeListener);
+            endTimeSpinner.valueProperty().removeListener(timeListener);
+            startDatePicker.valueProperty().removeListener(dateListener);
+            endDatePicker.valueProperty().removeListener(dateListener);
 
-            case "Last Month":
-                startDatePicker.setValue(nowDate.minusMonths(1));
-                endDatePicker.setValue(nowDate);
-                startTimeSpinner.getValueFactory().setValue(LocalTime.of(0,0));
-                endTimeSpinner.getValueFactory().setValue(nowTime);
-                break;
+            switch (rangeChoiceBox.getItems().get(index.intValue())) {
+                case "Last 5 minutes":
+                    startDatePicker.setValue(nowDateTime.minusMinutes(5).toLocalDate());
+                    endDatePicker.setValue(nowDate);
+                    startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(5));
+                    endTimeSpinner.getValueFactory().setValue(nowTime);
+                    break;
+
+                case "Last 30 minutes":
+                    startDatePicker.setValue(nowDateTime.minusMinutes(30).toLocalDate());
+                    endDatePicker.setValue(nowDate);
+                    startTimeSpinner.getValueFactory().setValue(nowTime.minusMinutes(30));
+                    endTimeSpinner.getValueFactory().setValue(nowTime);
+                    break;
+
+                case "Today":
+                    startDatePicker.setValue(nowDate);
+                    endDatePicker.setValue(nowDate);
+                    startTimeSpinner.getValueFactory().setValue(LocalTime.of(0, 0));
+                    endTimeSpinner.getValueFactory().setValue(nowTime);
+                    break;
+
+                case "Last Week":
+                    startDatePicker.setValue(nowDate.minusWeeks(1));
+                    endDatePicker.setValue(nowDate);
+                    startTimeSpinner.getValueFactory().setValue(LocalTime.of(0, 0));
+                    endTimeSpinner.getValueFactory().setValue(nowTime);
+                    break;
+
+                case "Last Month":
+                    startDatePicker.setValue(nowDate.minusMonths(1));
+                    endDatePicker.setValue(nowDate);
+                    startTimeSpinner.getValueFactory().setValue(LocalTime.of(0, 0));
+                    endTimeSpinner.getValueFactory().setValue(nowTime);
+                    break;
+            }
         }
     }
 
@@ -367,12 +392,14 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
         LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
         LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
-        Duration duration = Duration.between(start, end);
+
+
+        System.out.println("here");
 
         while(start.plusSeconds(divider).compareTo(end) <= 0){
             int avgPing = SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
                     Timestamp.valueOf(start.plusSeconds(divider)));
-            System.out.print(avgPing);
+//            System.out.print(avgPing);
             if(divider < 60){               //seconds
                 series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:s")), avgPing));
             }
@@ -394,7 +421,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
 
             start = start.plusSeconds(divider);
-            System.out.println("      " + start + "      " + end);
+//            System.out.println("      " + start + "      " + end);
         }
         System.out.println();
 
