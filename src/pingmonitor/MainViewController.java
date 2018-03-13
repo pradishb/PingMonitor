@@ -2,7 +2,6 @@ package pingmonitor;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,10 +12,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -90,6 +86,9 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
     @FXML
     private TimeSpinner endTimeSpinner;
+
+    @FXML
+    private Button refreshBtn;
 
     @FXML
     private void onCloseClick(final ActionEvent e){
@@ -176,8 +175,15 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             changeDivideBy();
             divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
         });
-        divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
 
+        refreshBtn.setOnAction(x -> {
+            changeStartAndEnd(rangeChoiceBox.getItems().indexOf(rangeChoiceBox.getValue()));
+            divideChoiceBox.getSelectionModel().selectedIndexProperty().removeListener(divideByListener);
+            changeDivideBy();
+            divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
+        });
+
+        divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
 
         gridPane.add(chart, 0, 0, 2, 1);
         PreferencesUtils.loadPersonDataFromFile();
@@ -312,6 +318,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             startTimeSpinner.setDisable(false);
             endDatePicker.setDisable(false);
             endTimeSpinner.setDisable(false);
+            refreshBtn.setDisable(true);
 
             startTimeSpinner.valueProperty().addListener(timeListener);
             endTimeSpinner.valueProperty().addListener(timeListener);
@@ -323,6 +330,7 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             startTimeSpinner.setDisable(true);
             endDatePicker.setDisable(true);
             endTimeSpinner.setDisable(true);
+            refreshBtn.setDisable(false);
 
             startTimeSpinner.valueProperty().removeListener(timeListener);
             endTimeSpinner.valueProperty().removeListener(timeListener);
@@ -415,10 +423,10 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
             else if(divider < 60*60*24){    //hour
                 series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, h:00")), avgPing));
             }
-            else if(divider < 60*60*24*7) { //week
+            else if(divider < 60*60*24*7) { //week-day
                 series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, EEE")), avgPing));
             }
-            else if(divider < 60*60*24*7*30) {  //day
+            else if(divider < 60*60*24*7*30) {  //month-day
                 series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d")), avgPing));
             }
             else {
