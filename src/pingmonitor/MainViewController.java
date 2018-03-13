@@ -165,7 +165,8 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
 
         rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> changeStartAndEnd(z));
         divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
-            changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
+            if(z.intValue() != -1)
+                changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
         });
         startTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
         endTimeSpinner.valueProperty().addListener((obs, oldValue, newValue) -> changeDivideBy());
@@ -369,32 +370,26 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         Duration duration = Duration.between(start, end);
 
         while(start.plusSeconds(divider).compareTo(end) <= 0){
-            System.out.print(SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end)));
-            System.out.print(duration.compareTo(Duration.ofDays(7)));
+            int avgPing = SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
+                    Timestamp.valueOf(start.plusSeconds(divider)));
+            System.out.print(avgPing);
             if(divider < 60){               //seconds
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:s")),
-                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
-                        Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:s")), avgPing));
             }
             else if(divider < 60*60){      //minutes
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("h:m")),
-                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
-                                Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("h:m")), avgPing));
             }
             else if(divider < 60*60*24){    //hour
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, h:00")),
-                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, h:00")), avgPing));
             }
             else if(divider < 60*60*24*7) { //week
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, EEE")),
-                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, EEE")), avgPing));
             }
             else if(divider < 60*60*24*7*30) {  //day
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d")),
-                        SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d")), avgPing));
             }
             else {
-                series.getData().add(new Data<>(start.toString(), SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start), Timestamp.valueOf(end))));
+                series.getData().add(new Data<>(start.toString(), avgPing));
             }
 
 
