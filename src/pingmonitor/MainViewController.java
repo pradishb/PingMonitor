@@ -161,17 +161,23 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         values.put("1 hour", 60*60);
         values.put("1 day", 60*60*24);
 
-        rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
-            changeStartAndEnd(z);
-            changeDivideBy();
-        });
-        divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
-            if(z.intValue() != -1)
-                changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
-        });
-
         changeStartAndEnd(0);
         changeDivideBy();
+
+        //listeners
+        ChangeListener<Number> divideByListener = (x, y, z) -> {
+            if(z.intValue() != -1)
+                changeBarChart(values.get(divideChoiceBox.getItems().get(z.intValue())));
+        };
+
+        rangeChoiceBox.getSelectionModel().selectedIndexProperty().addListener((x, y, z) -> {
+            changeStartAndEnd(z);
+            divideChoiceBox.getSelectionModel().selectedIndexProperty().removeListener(divideByListener);
+            changeDivideBy();
+            divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
+        });
+        divideChoiceBox.getSelectionModel().selectedIndexProperty().addListener(divideByListener);
+
 
         gridPane.add(chart, 0, 0, 2, 1);
         PreferencesUtils.loadPersonDataFromFile();
