@@ -407,18 +407,15 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         LocalDateTime start = LocalDateTime.of(startDatePicker.getValue(), startTimeSpinner.getValue());
         LocalDateTime end = LocalDateTime.of(endDatePicker.getValue(), endTimeSpinner.getValue());
 
-
-        System.out.println("here");
-
-        while(start.plusSeconds(divider).compareTo(end) <= 0){
+        while(start.compareTo(end) <= 0){
             int avgPing = SQLiteJDBCDriverConnection.getRangeValue(Timestamp.valueOf(start),
                     Timestamp.valueOf(start.plusSeconds(divider)));
 //            System.out.print(avgPing);
             if(divider < 60){               //seconds
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:s")), avgPing));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("m:ss")), avgPing));
             }
             else if(divider < 60*60){      //minutes
-                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("h:m")), avgPing));
+                series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("h:mm")), avgPing));
             }
             else if(divider < 60*60*24){    //hour
                 series.getData().add(new Data<>(start.format(DateTimeFormatter.ofPattern("MMM d, h:00")), avgPing));
