@@ -436,7 +436,17 @@ public class MainViewController implements Initializable, PreferencesUtils.Prefe
         }
         System.out.println();
 
+
+
         barChart.getData().clear();
-        barChart.getData().addAll(series);
+        barChart.getData().addAll((XYChart.Series) series);
+
+        for (final XYChart.Series<String, Integer> s : barChart.getData()) {
+            for (final Data<String, Integer> data : s.getData()) {
+                Tooltip tooltip = new Tooltip();
+                tooltip.setText("Avg Ping : " + data.getYValue().toString());
+                Tooltip.install(data.getNode(), tooltip);
+            }
+        }
     }
 }
